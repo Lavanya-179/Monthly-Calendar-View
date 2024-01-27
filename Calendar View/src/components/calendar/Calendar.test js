@@ -1,0 +1,57 @@
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import MyCalendar from './MyCalendar'; // Make sure to provide the correct path
+
+// Mock Redux store
+const mockStore = configureStore([]);
+
+describe('MyCalendar Component', () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore({
+      calendar: {
+        isLoading: false,
+        events: [], // Add sample events if needed
+        updatedStatus: '',
+      },
+    });
+  });
+
+  it('renders without crashing', () => {
+    render(
+      <Provider store={store}>
+        <MyCalendar />
+      </Provider>
+    );
+  });
+
+  it('handles event edit', () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <MyCalendar />
+      </Provider>
+    );
+
+    // Trigger event edit
+    fireEvent.click(getByText('Edit Event')); // Assuming 'Edit Event' is part of the rendered component
+  });
+
+  it('handles event deletion', async () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <MyCalendar />
+      </Provider>
+    );
+
+    // Trigger event deletion
+    fireEvent.click(getByText('Delete Event')); // Assuming 'Delete Event' is part of the rendered component
+
+    // Confirm deletion
+    await waitFor(() => {
+      fireEvent.click(getByText('OK')); // Assuming 'OK' is the confirmation button
+    });
+  });
+});
